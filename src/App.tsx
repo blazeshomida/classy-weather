@@ -46,10 +46,10 @@ function App() {
 
         const response = await weatherRes.json();
         const {
-          temperature_2m_max: max,
-          temperature_2m_min: min,
-          time: dates,
-          weathercode: codes,
+          temperature_2m_max: max = [],
+          temperature_2m_min: min = [],
+          time: dates = [],
+          weathercode: codes = [],
         } = response.daily;
 
         const weatherInfo = {
