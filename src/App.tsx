@@ -120,8 +120,10 @@ function Day({
   date: string;
   index: number;
 }) {
+ if (!weather) return null
+
   return (
-    weather && (
+    
       <li className="day">
         <span>{getWeatherIcon(weather.codes[index])}</span>
         <p>{index === 0 ? "Today" : formatDay(date)}</p>
@@ -130,6 +132,6 @@ function Day({
           <strong>{Math.ceil(weather.max[index])}&deg;</strong>
         </p>
       </li>
-    )
+    
   );
 }
