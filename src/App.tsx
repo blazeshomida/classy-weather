@@ -30,7 +30,7 @@ function App() {
         );
         const geoData = await geoRes.json();
 
-        if (!geoData.results) throw new Error("Location not found");
+        if (!geoData.results) throw new Error(`Location not found ${location}`);
 
         const { latitude, longitude, timezone, name, country_code } =
           geoData.results.at(0);
@@ -40,17 +40,22 @@ function App() {
         // 2) Getting actual weather
         const weatherRes = await fetch(
           `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}${
-            timezone && `&timezone=${timezone}`
+            timezone ? `&timezone=${timezone}` : ""
           }&daily=weathercode,temperature_2m_max,temperature_2m_min`
         );
 
-        const response = await weatherRes.json();
+        if (!weatherRes.ok) {
+          throw new Error(`Unable to determine weather for ${name}  ${convertToFlag(country_code)}`)
+        }
+
+        const data = await weatherRes.json();
         const {
           temperature_2m_max: max = [],
           temperature_2m_min: min = [],
           time: dates = [],
           weathercode: codes = [],
-        } = response.daily;
+        } = data.daily;
+
 
         const weatherInfo = {
           name,
@@ -91,12 +96,12 @@ function App() {
       />
       {isLoading && <p className="loader">Loading...</p>}
 
-      {weather && (
-        <div>
+      {(weather && !error) && (
+       <div>
           <h2>Weather For {weather.name}</h2>
           <Weather>
             {weather.dates.map((date: string, i: number) => (
-              <Day weather={weather} key={date} index={i} date={date} />
+               <Day weather={weather} key={date} index={i} date={date} />
             ))}
           </Weather>
         </div>
